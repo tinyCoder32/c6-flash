@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C6 Screen Designer — install</title>
+<style>
+  :root {
+    --bg: #0b0f1a; --card: #121829; --line: #1e2742;
+    --ink: #e8edf7; --dim: #93a0bb; --accent: #3b82f6; --warn: #f7b955;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 16px 64px; background: var(--bg); color: var(--ink);
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .sub { color: var(--dim); margin: 0 0 28px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 22px; margin-bottom: 18px;
+  }
+  .install { text-align: center; }
+  .btn {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--accent); color: #fff; font: 600 15px/1 inherit;
+    padding: 14px 30px; border-radius: 10px;
+  }
+  .btn:hover { background: #2f74e6; }
+  esp-web-install-button[install-unsupported] + .fallback { display: block; }
+  ol { padding-left: 20px; margin: 0; }
+  li { margin-bottom: 10px; }
+  li:last-child { margin-bottom: 0; }
+  code { background: #0a0e18; border: 1px solid var(--line); border-radius: 5px;
+         padding: 1px 6px; font-size: 13px; }
+  .note { color: var(--dim); font-size: 13.5px; }
+  .warn { color: var(--warn); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  td { padding: 7px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  td:first-child { color: var(--dim); width: 38%; padding-right: 14px; }
+  tr:first-child td { border-top: 0; }
+  a { color: #7fb0ff; }
+</style>
+</head>
+<body>
+<main>
+  <h1>C6 Screen Designer</h1>
+  <p class="sub">Firmware for the Waveshare ESP32-C6-LCD-1.47. Plug the board in,
+    press Install, and it is done in about a minute.</p>
+
+  <div class="card install">
+    <esp-web-install-button manifest="manifest.json">
+      <button class="btn" slot="activate">Install firmware</button>
+      <span slot="unsupported" class="warn">This browser cannot flash. Open the
+        page in Chrome or Edge on a desktop.</span>
+      <span slot="not-allowed" class="warn">Flashing needs a secure page: open
+        this over https (or from localhost).</span>
+    </esp-web-install-button>
+    <p class="note" style="margin-bottom:0">
+      Needs Chrome or Edge on a desktop — Safari and Firefox have no Web Serial.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 12px;font-size:15px">After it flashes</h3>
+    <ol>
+      <li>The panel shows <strong>C6-Setup</strong>. Join that Wi-Fi hotspot from
+        a phone or laptop — it is open, no password.</li>
+      <li>A setup page opens by itself. Pick your network, type its password,
+        save. The board reboots and shows its address on screen.</li>
+      <li>Open that address — or <code>http://c6.local/</code> — from any browser
+        on the same network. That is the screen designer.</li>
+    </ol>
+    <p class="note" style="margin-bottom:0">The ESP32-C6 is 2.4 GHz only, so pick
+      a 2.4 GHz network.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 12px;font-size:15px">The BOOT button</h3>
+    <table>
+      <tr><td>Tap</td><td>next screen</td></tr>
+      <tr><td>Hold ~1.5s</td><td>reopen the Wi-Fi setup hotspot</td></tr>
+      <tr><td>Hold ~4s</td><td>power off — press RESET to wake it</td></tr>
+    </table>
+    <p class="note" style="margin:12px 0 0">Each one fires when you let go, and
+      the panel shows which is armed while you hold.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 12px;font-size:15px">If the board is not offered</h3>
+    <p class="note" style="margin:0">Unplug it, hold <strong>BOOT</strong>, plug it
+      back in, release — that forces its download mode. Then press Install again
+      and pick the <code>usbmodem</code> port.</p>
+  </div>
+</main>
+<script type="module"
+  src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js"></script>
+</body>
+</html>

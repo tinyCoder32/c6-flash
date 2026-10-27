@@ -1,0 +1,11 @@
+{
+  "name": "C6 Screen Designer",
+  "version": "1.0.0",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32-C6",
+      "parts": [{ "path": "c6-screen-designer.bin", "offset": 0 }]
+    }
+  ]
+}

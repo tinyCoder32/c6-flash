@@ -1,0 +1,11 @@
+{
+  "name": "Screen Designer — Waveshare ESP32-C6-LCD-1.47",
+  "version": "1.1.0",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32-C6",
+      "parts": [{ "path": "c6-lcd-147.bin", "offset": 0 }]
+    }
+  ]
+}

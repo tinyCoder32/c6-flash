@@ -22,6 +22,20 @@
     padding: 22px; margin-bottom: 18px;
   }
   .install { text-align: center; }
+  .boards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px) { .boards { grid-template-columns: 1fr; } }
+  .board {
+    appearance: none; cursor: pointer; text-align: left; color: inherit;
+    font: inherit; background: #0d1322; border: 1px solid var(--line);
+    border-radius: 11px; padding: 14px 16px;
+  }
+  .board:hover { border-color: #2c3a5e; }
+  .board[aria-pressed="true"] {
+    border-color: var(--accent); background: #10203c;
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+  .board b { display: block; font-size: 14.5px; margin-bottom: 3px; }
+  .board span { display: block; color: var(--dim); font-size: 12.5px; line-height: 1.45; }
   .btn {
     appearance: none; border: 0; cursor: pointer;
     background: var(--accent); color: #fff; font: 600 15px/1 inherit;
@@ -45,12 +59,20 @@
 </head>
 <body>
 <main>
-  <h1>C6 Screen Designer</h1>
-  <p class="sub">Firmware for the Waveshare ESP32-C6-LCD-1.47. Plug the board in,
-    press Install, and it is done in about a minute.</p>
+  <h1>Screen Designer</h1>
+  <p class="sub">Firmware for small ESP32 panels. Pick your board, plug it in,
+    press Install — about a minute, and nothing to install on your computer.</p>
+
+  <div class="card">
+    <h3 style="margin:0 0 4px;font-size:15px">Which board?</h3>
+    <p class="note" style="margin:0 0 14px">Each one gets its own image. Pick the
+      wrong one and the flasher refuses it rather than bricking anything — it
+      checks the chip it is talking to.</p>
+    <div class="boards" id="boards"></div>
+  </div>
 
   <div class="card install">
-    <esp-web-install-button manifest="manifest.json">
+    <esp-web-install-button>
       <button class="btn" slot="activate">Install firmware</button>
       <span slot="unsupported" class="warn">This browser cannot flash. Open the
         page in Chrome or Edge on a desktop.</span>
@@ -81,7 +103,7 @@
     <table>
       <tr><td>Tap</td><td>next screen</td></tr>
       <tr><td>Hold ~1.5s</td><td>reopen the Wi-Fi setup hotspot</td></tr>
-      <tr><td>Hold ~4s</td><td>power off — press RESET to wake it</td></tr>
+      <tr><td>Hold ~4s</td><td id="offRow">power off</td></tr>
     </table>
     <p class="note" style="margin:12px 0 0">Each one fires when you let go, and
       the panel shows which is armed while you hold.</p>
@@ -94,6 +116,54 @@
       and pick the <code>usbmodem</code> port.</p>
   </div>
 </main>
+<script>
+  // One image per board. The wake wording differs because it is a property of
+  // the chip: a sleeping ESP32 can only be woken by a pin with an RTC pad
+  // behind it, and only one of these two boards puts its button on one.
+  const BOARDS = [
+    {
+      id: "c6-lcd-147",
+      name: "Waveshare ESP32-C6-LCD-1.47",
+      spec: "1.47\u2033 172\u00d7320 \u00b7 RGB LED \u00b7 microSD",
+      off: "power off \u2014 press RESET to wake it",
+    },
+    {
+      id: "tdisplay-s3",
+      name: "LilyGO T-Display-S3",
+      spec: "1.9\u2033 170\u00d7320 \u00b7 battery connector \u00b7 second button",
+      off: "power off \u2014 hold BOOT to wake it",
+    },
+  ];
+
+  const wrap = document.getElementById("boards");
+  const btn = document.querySelector("esp-web-install-button");
+  const offRow = document.getElementById("offRow");
+
+  function choose(board) {
+    btn.manifest = "manifest-" + board.id + ".json";
+    offRow.textContent = board.off;
+    for (const el of wrap.children) {
+      el.setAttribute("aria-pressed", String(el.dataset.id === board.id));
+    }
+    try { localStorage.setItem("board", board.id); } catch (e) { /* private mode */ }
+  }
+
+  for (const board of BOARDS) {
+    const el = document.createElement("button");
+    el.className = "board";
+    el.type = "button";
+    el.dataset.id = board.id;
+    el.innerHTML = "<b></b><span></span>";
+    el.querySelector("b").textContent = board.name;
+    el.querySelector("span").textContent = board.spec;
+    el.onclick = () => choose(board);
+    wrap.appendChild(el);
+  }
+
+  let saved = null;
+  try { saved = localStorage.getItem("board"); } catch (e) { /* private mode */ }
+  choose(BOARDS.find((b) => b.id === saved) || BOARDS[0]);
+</script>
 <script type="module"
   src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js"></script>
 </body>
